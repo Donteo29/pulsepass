@@ -8,10 +8,15 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
+    Optional<Ticket> findByTicketCode(String ticketCode);
+
     List<Ticket> findByUser_Email(String email);
+
+    List<Ticket> findByUserEmailIgnoreCaseOrderByPurchaseDateDesc(String email);
 
     List<Ticket> findByUser_EmailAndStatus(String email, TicketStatus status);
 
@@ -24,6 +29,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
               and t.event.eventCode = :eventCode
             """)
     long countPaidTicketsByEventCode(@Param("eventCode") String eventCode);
+
+    long countByEventEventCodeAndStatus(String eventCode, TicketStatus status);
 
     @Query("""
             select t

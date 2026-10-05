@@ -112,6 +112,10 @@ public class Event {
         return status;
     }
 
+    public void setStatus(EventStatus status) {
+        this.status = status;
+    }
+
     public LocalDateTime getEventDate() {
         return eventDate;
     }

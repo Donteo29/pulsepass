@@ -82,6 +82,10 @@ public class Ticket {
         return status;
     }
 
+    public void setStatus(TicketStatus status) {
+        this.status = status;
+    }
+
     public LocalDateTime getPurchaseDate() {
         return purchaseDate;
     }
