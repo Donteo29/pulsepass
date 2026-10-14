@@ -1,3 +1,4 @@
+
 package com.pulsepass.entity;
 
 import jakarta.persistence.Column;
@@ -51,8 +52,9 @@ public class Ticket {
     protected Ticket() {
     }
 
-    public Ticket(String ticketCode, TicketType type, BigDecimal price, TicketStatus status,
-                  LocalDateTime purchaseDate, User user, Event event) {
+    public Ticket(String ticketCode, TicketType type, BigDecimal price,
+                  TicketStatus status, LocalDateTime purchaseDate,
+                  User user, Event event) {
         this.ticketCode = ticketCode;
         this.type = type;
         this.price = price;

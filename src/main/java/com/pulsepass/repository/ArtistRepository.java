@@ -1,3 +1,4 @@
+
 package com.pulsepass.repository;
 
 import com.pulsepass.entity.Artist;

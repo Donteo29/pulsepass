@@ -1,3 +1,4 @@
+
 package com.pulsepass.repository;
 
 import com.pulsepass.entity.Event;
@@ -38,7 +39,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
               and a.stageName = :stageName
             order by e.eventDate asc
             """)
-    List<Event> findByCityAndArtistStageName(@Param("city") String city, @Param("stageName") String stageName);
+    List<Event> findByCityAndArtistStageName(
+            @Param("city") String city,
+            @Param("stageName") String stageName
+    );
 
     @Query("""
             select distinct e
@@ -51,7 +55,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
               and lower(a.stageName) like lower(concat('%', :artistText, '%'))
             order by e.eventDate asc
             """)
-    List<Event> findRecommendedEvents(@Param("city") String city,
-                                      @Param("after") LocalDateTime after,
-                                      @Param("artistText") String artistText);
+    List<Event> findRecommendedEvents(
+            @Param("city") String city,
+            @Param("after") LocalDateTime after,
+            @Param("artistText") String artistText
+    );
 }
