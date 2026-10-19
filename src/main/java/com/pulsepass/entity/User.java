@@ -1,3 +1,4 @@
+
 package com.pulsepass.entity;
 
 import jakarta.persistence.Column;
@@ -26,6 +27,12 @@ public class User {
     @Column(nullable = false, unique = true, length = 180)
     private String email;
 
+    @Column(name = "password_hash", length = 255)
+    private String passwordHash;
+
+    @Column(nullable = false, length = 20)
+    private String role = "USER";
+
     @Column(nullable = false)
     private Boolean active = true;
 
@@ -42,6 +49,16 @@ public class User {
         this.username = username;
         this.email = email;
         this.active = active;
+        this.role = "USER";
+    }
+
+    public User(String username, String email, String passwordHash,
+                String role, Boolean active) {
+        this.username = username;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.role = role;
+        this.active = active;
     }
 
     public Long getId() {
@@ -54,6 +71,14 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public Boolean getActive() {
