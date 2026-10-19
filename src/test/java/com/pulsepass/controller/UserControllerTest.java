@@ -12,12 +12,16 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.pulsepass.security.JwtService;
+import com.pulsepass.security.CustomUserDetailsService;
 @WebMvcTest(UserController.class)
 class UserControllerTest {
     @Autowired MockMvc mvc;
     @MockitoBean UserService userService;
-
+    @MockitoBean
+    JwtService jwtService;
+    @MockitoBean
+    CustomUserDetailsService customUserDetailsService;
     @Test void findUserByEmailReturns200() throws Exception {
         when(userService.findByEmail("andrea@example.com")).thenReturn(
                 new UserResponse(1L, "andrea", "andrea@example.com", true, "Andrea", "Perez", null, null, LocalDate.of(1994, 2, 3)));

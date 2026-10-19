@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import org.springframework.security.core.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -61,7 +61,15 @@ public class GlobalExceptionHandler {
         // No se exponen stack traces ni mensajes internos al cliente.
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal error occurred", Map.of());
     }
-
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(
+            AuthenticationException ex) {
+        return build(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid username/email or password",
+                Map.of()
+        );
+    }
     private ResponseEntity<ErrorResponse> build(
             HttpStatus status, String message, Map<String, String> details) {
         ErrorResponse body = new ErrorResponse(

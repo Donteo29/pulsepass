@@ -12,13 +12,17 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.pulsepass.security.JwtService;
+import com.pulsepass.security.CustomUserDetailsService;
 @WebMvcTest(EventController.class)
 class EventControllerTest {
     @Autowired MockMvc mvc;
     @MockitoBean EventService eventService;
     @MockitoBean TicketService ticketService;
-
+    @MockitoBean
+    JwtService jwtService;
+    @MockitoBean
+    CustomUserDetailsService customUserDetailsService;
     @Test void invalidCreateRequestReturns400WithoutCallingService() throws Exception {
         mvc.perform(post("/api/events").contentType("application/json")
                 .content("{\"eventCode\":\"\",\"name\":\"\",\"category\":null,\"eventDate\":null,\"minimumAge\":-1,\"venueCode\":\"\"}"))

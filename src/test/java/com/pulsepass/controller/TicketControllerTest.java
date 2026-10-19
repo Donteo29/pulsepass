@@ -16,12 +16,16 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.pulsepass.security.JwtService;
+import com.pulsepass.security.CustomUserDetailsService;
 @WebMvcTest(TicketController.class)
 class TicketControllerTest {
     @Autowired MockMvc mvc;
     @MockitoBean TicketService ticketService;
-
+    @MockitoBean
+    JwtService jwtService;
+    @MockitoBean
+    CustomUserDetailsService customUserDetailsService;
     @Test void invalidPurchaseReturns400WithoutCallingService() throws Exception {
         mvc.perform(post("/api/tickets").contentType("application/json")
                 .content("{\"userEmail\":\"mal\",\"eventCode\":\"\",\"type\":null}"))

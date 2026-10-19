@@ -10,12 +10,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import com.pulsepass.security.JwtService;
+import com.pulsepass.security.CustomUserDetailsService;
 @WebMvcTest(ArtistController.class)
 class ArtistControllerTest {
     @Autowired MockMvc mvc;
     @MockitoBean ArtistService artistService;
-
+    @MockitoBean JwtService jwtService;
+    @MockitoBean
+    CustomUserDetailsService customUserDetailsService;
     @Test void findArtistByIdReturns200() throws Exception {
         when(artistService.findById(1L)).thenReturn(new ArtistResponse(1L, "Solar Beat", "Colombia", "Electronic", true));
         mvc.perform(get("/api/artists/1")).andExpect(status().isOk())
