@@ -1,0 +1,440 @@
+{
+  "info": {
+    "_postman_id": "a4c561e1-5b99-453e-bb2b-33d6c22d93b7",
+    "name": "PulsePass - API local (22 rutas)",
+    "description": "Colección para ejecución manual individual. No contiene scripts ni assertions. Sustituye variables locales y revisa Status, Body y estado persistido para cada solicitud.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Registrar USER_A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/users",
+        "description": "201. Define userAUsername, userAEmail y userAPassword en el entorno antes de enviar. Repite manualmente con variables propias para USER_B, STAFF, ADMIN e INACTIVE_USER. Nunca se asigna un rol privilegiado desde el registro.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"{{userAUsername}}\",\n  \"email\": \"{{userAEmail}}\",\n  \"password\": \"{{userAPassword}}\",\n  \"firstName\": \"User\",\n  \"lastName\": \"A\",\n  \"birthDate\": \"1995-05-15\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Iniciar sesión",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "description": "200. Para cada actor, copia accessToken manualmente a su variable local antes de ejecutar solicitudes protegidas. No uses scripts.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"identifier\": \"{{loginIdentifier}}\",\n  \"password\": \"{{loginPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Consultar sesión actual",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userAToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/me",
+        "description": "200 para USER_A. Confirma identifier, username, email y roles; nunca devuelve contraseña ni hash."
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Consultar sede",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/venues/{{venueCode}}",
+        "description": "200 para una sede existente; 404 para un código inexistente."
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Listar sedes activas",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/venues/active",
+        "description": "200. La respuesta incluye sedes activas."
+      },
+      "response": []
+    },
+    {
+      "name": "06 - Crear evento",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/events",
+        "description": "ADMIN recibe 201 y el evento comienza en DRAFT. USER recibe 403; STAFF también recibe 403.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"eventCode\": \"{{eventCode}}\",\n  \"name\": \"PulsePass Demo {{runId}}\",\n  \"description\": \"Evento de demostración manual.\",\n  \"category\": \"MUSIC\",\n  \"eventDate\": \"2030-08-20T20:00:00\",\n  \"minimumAge\": 18,\n  \"venueCode\": \"{{venueCode}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Asociar artista al evento",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/events/{{eventCode}}/artists/{{artistId}}",
+        "description": "ADMIN recibe 200. Comprueba la relación en la respuesta o al volver a consultar el evento."
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Publicar evento",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/events/{{eventCode}}/publish",
+        "description": "ADMIN recibe 200 y el estado pasa a PUBLISHED."
+      },
+      "response": []
+    },
+    {
+      "name": "09 - Consultar evento",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/events/{{eventCode}}",
+        "description": "200 para evento publicado. Un borrador no debe ser visible para público ni USER."
+      },
+      "response": []
+    },
+    {
+      "name": "10 - Listar eventos publicados",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/events/published",
+        "description": "200. Comprueba que no se incluya ningún borrador."
+      },
+      "response": []
+    },
+    {
+      "name": "11 - Buscar eventos por artista",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/events/by-artist?stageName={{artistStageName}}",
+        "description": "200. Anónimo y USER solo ven eventos publicados."
+      },
+      "response": []
+    },
+    {
+      "name": "12 - Consultar artista por ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/artists/{{artistId}}",
+        "description": "200 para un artista existente; 404 para un ID inexistente."
+      },
+      "response": []
+    },
+    {
+      "name": "13 - Consultar artista por nombre artístico",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/artists/by-stage-name?stageName={{artistStageName}}",
+        "description": "200 para un artista existente."
+      },
+      "response": []
+    },
+    {
+      "name": "14 - Listar artistas activos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/artists/active",
+        "description": "200. La respuesta contiene artistas activos."
+      },
+      "response": []
+    },
+    {
+      "name": "15 - Consultar usuario por correo propio",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userAToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/users/by-email?email={{userAEmail}}",
+        "description": "200 para USER_A. Repite con correo de USER_B: debe dar 403 o 404 conforme a la política definida."
+      },
+      "response": []
+    },
+    {
+      "name": "16 - Consultar usuario por nombre propio",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userAToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/users/by-username?username={{userAUsername}}",
+        "description": "200 para USER_A. Repite con nombre de USER_B: debe denegar el acceso."
+      },
+      "response": []
+    },
+    {
+      "name": "17 - Comprar ticket propio",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userAToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/tickets",
+        "description": "201. Copia ticketCode a una variable local. Un correo de otra persona debe recibir 403 y no crear ticket.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userEmail\": \"{{userAEmail}}\",\n  \"eventCode\": \"{{eventCode}}\",\n  \"type\": \"GENERAL\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "18 - Consultar ticket propio",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userAToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/tickets/{{ticketToCancel}}",
+        "description": "200 para el propietario. Copia un segundo ticket distinto en ticketToUse para el flujo de uso."
+      },
+      "response": []
+    },
+    {
+      "name": "19 - Listar tickets propios",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userAToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/tickets/by-user?email={{userAEmail}}",
+        "description": "200 para USER_A. Cambiar el correo a USER_B debe ser denegado."
+      },
+      "response": []
+    },
+    {
+      "name": "20 - Listar tickets pagados del evento",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staffToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/events/{{eventCode}}/tickets/paid",
+        "description": "200 para STAFF/ADMIN. USER debe recibir 403."
+      },
+      "response": []
+    },
+    {
+      "name": "21 - Cancelar ticket propio",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userAToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/tickets/{{ticketToCancel}}/cancel",
+        "description": "200 si las reglas del servicio permiten cancelar. Usa un ticket independiente del escenario de uso."
+      },
+      "response": []
+    },
+    {
+      "name": "22 - Marcar ticket como usado",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staffToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/tickets/{{ticketToUse}}/use",
+        "description": "200 para STAFF/ADMIN y ticket pagado. USER debe recibir 403."
+      },
+      "response": []
+    }
+  ]
+}
