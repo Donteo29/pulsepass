@@ -11,12 +11,16 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
@@ -59,6 +63,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex) {
         // No se exponen stack traces ni mensajes internos al cliente.
+        LOGGER.error("Unexpected exception while handling request", ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal error occurred", Map.of());
     }
     @ExceptionHandler(AuthenticationException.class)
@@ -70,6 +75,13 @@ public class GlobalExceptionHandler {
                 Map.of()
         );
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            AccessDeniedException ex) {
+        return build(HttpStatus.FORBIDDEN, ex.getMessage(), Map.of());
+    }
+
     private ResponseEntity<ErrorResponse> build(
             HttpStatus status, String message, Map<String, String> details) {
         ErrorResponse body = new ErrorResponse(

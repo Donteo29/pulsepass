@@ -12,7 +12,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.pulsepass.security.JwtService;
 import com.pulsepass.security.CustomUserDetailsService;
+import com.pulsepass.config.PasswordConfig;
+import com.pulsepass.config.SecurityConfig;
+import com.pulsepass.security.JwtAuthenticationFilter;
+import com.pulsepass.security.SecurityErrorResponseWriter;
+import org.springframework.context.annotation.Import;
 @WebMvcTest(ArtistController.class)
+@Import({SecurityConfig.class, PasswordConfig.class, JwtAuthenticationFilter.class, SecurityErrorResponseWriter.class})
 class ArtistControllerTest {
     @Autowired MockMvc mvc;
     @MockitoBean ArtistService artistService;

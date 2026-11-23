@@ -13,7 +13,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.pulsepass.security.JwtService;
+import com.pulsepass.security.SecurityErrorResponseWriter;
+import com.pulsepass.config.PasswordConfig;
+import com.pulsepass.config.SecurityConfig;
+import com.pulsepass.security.JwtAuthenticationFilter;
+import org.springframework.context.annotation.Import;
 @WebMvcTest(VenueController.class)
+@Import({SecurityConfig.class, PasswordConfig.class, JwtAuthenticationFilter.class, SecurityErrorResponseWriter.class})
 class VenueControllerTest {
     @Autowired MockMvc mvc;
     @MockitoBean VenueService venueService;

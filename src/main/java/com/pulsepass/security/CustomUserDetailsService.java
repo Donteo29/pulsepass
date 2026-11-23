@@ -30,11 +30,24 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Invalid credentials");
         }
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
-                .password(user.getPasswordHash())
-                .authorities("ROLE_" + user.getRole())
-                .disabled(!Boolean.TRUE.equals(user.getActive()))
-                .build();
+        return new PulsePassPrincipal(user);
+    }
+
+    @Transactional(readOnly = true)
+    public PulsePassPrincipal loadUserById(String identifier) {
+        try {
+            long id = Long.parseLong(identifier);
+            User user = userRepository.findById(id)
+                    .orElseThrow(() ->
+                            new UsernameNotFoundException("Invalid token subject"));
+            if (!Boolean.TRUE.equals(user.getActive())
+                    || user.getPasswordHash() == null
+                    || user.getPasswordHash().isBlank()) {
+                throw new UsernameNotFoundException("Invalid token subject");
+            }
+            return new PulsePassPrincipal(user);
+        } catch (NumberFormatException ex) {
+            throw new UsernameNotFoundException("Invalid token subject", ex);
+        }
     }
 }
